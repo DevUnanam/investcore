@@ -25,7 +25,7 @@ class Profile(models.Model):
 
     @property
     def has_account_management_access(self):
-        return self.user.is_superuser or any(
+        return self.user.is_superuser or self.role == self.Role.ADMIN or any(
             [
                 self.can_view_users,
                 self.can_create_users,

@@ -1,0 +1,58 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard | Nervex AI</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+  </head>
+  <body>
+    {% include "dashboard/partials/market_marquee.html" %}
+    <main class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="{% url 'dashboard:home' %}">Nervex <span>AI</span></a>
+        <nav>
+          <a class="active" href="{% url 'dashboard:home' %}">Overview</a>
+          <a href="{% url 'dashboard:users' %}">Users</a>
+          <a href="{% url 'accounts:profile' %}">Profile</a>
+          {% if request.user.is_superuser %}<a href="/admin/">Django Admin</a>{% endif %}
+        </nav>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button>Logout</button></form>
+      </aside>
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <p>{{ request.user.profile.get_role_display }} workspace</p>
+            <h1>Operations Dashboard</h1>
+          </div>
+          <a class="avatar-link" href="{% url 'accounts:profile' %}">
+            {% if request.user.profile.photo %}<img src="{{ request.user.profile.photo.url }}" alt="">{% else %}{{ request.user.first_name|first|default:request.user.username|first }}{% endif %}
+          </a>
+        </header>
+        <section class="metric-grid admin">
+          <article><span>Registered Users</span><strong>{{ stats.users }}</strong></article>
+          <article><span>Active Investments</span><strong>{{ stats.active_investments }}</strong></article>
+          <article><span>Total Portfolio Value</span><strong>{{ stats.portfolio_value }}</strong></article>
+          <article><span>Pending Reviews</span><strong>{{ stats.pending_reviews }}</strong></article>
+        </section>
+        <section class="admin-panel">
+          <div>
+            <h2>Account Management</h2>
+            <p>Review users, inspect roles, and prepare account controls for the next permission stage.</p>
+          </div>
+          <a href="{% url 'dashboard:users' %}">View Users</a>
+        </section>
+        <section class="permission-strip">
+          <h2>Your Permissions</h2>
+          <div>
+            <span class="{% if request.user.profile.can_view_users or request.user.is_superuser %}on{% endif %}">View users</span>
+            <span class="{% if request.user.profile.can_create_users or request.user.is_superuser %}on{% endif %}">Create users</span>
+            <span class="{% if request.user.profile.can_edit_users or request.user.is_superuser %}on{% endif %}">Edit users</span>
+            <span class="{% if request.user.profile.can_delete_users or request.user.is_superuser %}on{% endif %}">Delete users</span>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

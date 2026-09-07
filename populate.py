@@ -57,6 +57,8 @@ def upsert_user(username, first_name, last_name, email, role):
         profile.can_edit_users = True
         profile.can_delete_users = True
         profile.can_activate_users = True
+    elif role == Profile.Role.ADMIN:
+        profile.can_view_users = True
     profile.save()
     return user, created
 

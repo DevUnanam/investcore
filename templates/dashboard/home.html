@@ -1,17 +1,85 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard | Nervex AI</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
   </head>
   <body>
-    <h1>Nervex AI Dashboard</h1>
-    <p>Welcome, {{ request.user.get_full_name|default:request.user.username }}.</p>
-    <p>This placeholder confirms login redirects are wired. The full investment dashboard is the next stage.</p>
-    <form method="post" action="{% url 'accounts:logout' %}">
-      {% csrf_token %}
-      <button type="submit">Logout</button>
-    </form>
+    {% include "dashboard/partials/market_marquee.html" %}
+    <main class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="{% url 'dashboard:home' %}">Nervex <span>AI</span></a>
+        <nav>
+          <a class="active" href="{% url 'dashboard:home' %}">Home</a>
+          <a href="#">Portfolio</a>
+          <a href="#">Transactions</a>
+          <a href="{% url 'accounts:profile' %}">Profile</a>
+        </nav>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button>Logout</button></form>
+      </aside>
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <p>Good morning, {{ request.user.first_name|default:request.user.username }}</p>
+            <h1>Investment Dashboard</h1>
+          </div>
+          <a class="avatar-link" href="{% url 'accounts:profile' %}">
+            {% if request.user.profile.photo %}<img src="{{ request.user.profile.photo.url }}" alt="">{% else %}{{ request.user.first_name|first|default:request.user.username|first }}{% endif %}
+          </a>
+        </header>
+        <section class="balance-panel">
+          <div>
+            <span>Total Portfolio Balance</span>
+            <strong>{{ summary.total_balance }}</strong>
+          </div>
+          <div class="quick-actions">
+            <button>Add Money</button>
+            <button>Withdraw</button>
+          </div>
+        </section>
+        <section class="metric-grid">
+          <article><span>Invested Amount</span><strong>{{ summary.invested_amount }}</strong></article>
+          <article><span>Est. Returns</span><strong class="positive">+{{ summary.returns }}</strong><em>+20.73%</em></article>
+          <article><span>Available Balance</span><strong>{{ summary.available }}</strong></article>
+          <article><span>Next Maturity</span><strong>20 Jun 2025</strong><em>In 18 days</em></article>
+        </section>
+        <section class="section-head">
+          <h2>Active Bundles</h2>
+          <a href="#">View all</a>
+        </section>
+        <section class="bundle-list">
+          {% for bundle in bundles %}
+            <article class="bundle-card">
+              <div>
+                <h3>{{ bundle.name }}</h3>
+                <span>Active</span>
+              </div>
+              <dl>
+                <div><dt>Invested</dt><dd>{{ bundle.amount }}</dd></div>
+                <div><dt>Maturity Value</dt><dd class="positive">{{ bundle.value }}</dd></div>
+                <div><dt>Duration</dt><dd>{{ bundle.duration }}</dd></div>
+              </dl>
+              <div class="progress"><i style="width: {{ bundle.progress }}%"></i></div>
+              <small>{{ bundle.progress }}% complete</small>
+            </article>
+          {% endfor %}
+        </section>
+        <section class="section-head">
+          <h2>Recent Transactions</h2>
+          <a href="#">View all</a>
+        </section>
+        <section class="transaction-list">
+          {% for transaction in transactions %}
+            <article>
+              <div><strong>{{ transaction.title }}</strong><span>{{ transaction.date }}</span></div>
+              <b class="{{ transaction.type }}">{{ transaction.amount }}</b>
+            </article>
+          {% endfor %}
+        </section>
+      </section>
+    </main>
   </body>
 </html>

@@ -1,0 +1,49 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile | Nervex AI</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="{% url 'dashboard:home' %}">Nervex <span>AI</span></a>
+        <nav>
+          <a href="{% url 'dashboard:home' %}">Dashboard</a>
+          {% if request.user.profile.role != "user" %}<a href="{% url 'dashboard:users' %}">Users</a>{% endif %}
+          <a class="active" href="{% url 'accounts:profile' %}">Profile</a>
+        </nav>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button>Logout</button></form>
+      </aside>
+      <section class="content">
+        <header class="profile-hero">
+          <div class="profile-photo">
+            {% if request.user.profile.photo %}<img src="{{ request.user.profile.photo.url }}" alt="">{% else %}{{ request.user.first_name|first|default:request.user.username|first }}{% endif %}
+          </div>
+          <div>
+            <p>{{ request.user.profile.get_role_display }} Profile</p>
+            <h1>{{ request.user.get_full_name|default:request.user.username }}</h1>
+            <span>{{ request.user.email }}</span>
+          </div>
+        </header>
+        {% if messages %}
+          {% for message in messages %}<div class="notice">{{ message }}</div>{% endfor %}
+        {% endif %}
+        <form class="profile-form" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% for field in form %}
+            <label>
+              <span>{{ field.label }}</span>
+              {{ field }}
+              {% if field.errors %}<em>{{ field.errors }}</em>{% endif %}
+            </label>
+          {% endfor %}
+          <button type="submit">Save Profile</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+<section class="market-marquee" aria-label="Available forex and stock prices">
+  <div class="ticker-track">
+    {% for item in market_items %}
+      <span class="ticker-item"><strong>{{ item.symbol }}</strong><b>{{ item.price }}</b><em class="{{ item.direction }}">{{ item.change }}</em></span>
+    {% endfor %}
+    {% for item in market_items %}
+      <span class="ticker-item"><strong>{{ item.symbol }}</strong><b>{{ item.price }}</b><em class="{{ item.direction }}">{{ item.change }}</em></span>
+    {% endfor %}
+  </div>
+</section>

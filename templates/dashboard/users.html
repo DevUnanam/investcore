@@ -1,0 +1,49 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Users | Nervex AI</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="{% url 'dashboard:home' %}">Nervex <span>AI</span></a>
+        <nav>
+          <a href="{% url 'dashboard:home' %}">Overview</a>
+          <a class="active" href="{% url 'dashboard:users' %}">Users</a>
+          <a href="{% url 'accounts:profile' %}">Profile</a>
+        </nav>
+      </aside>
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <p>Frontend administration</p>
+            <h1>Registered Users</h1>
+          </div>
+          <a class="ghost-button" href="{% url 'dashboard:home' %}">Back</a>
+        </header>
+        <section class="table-card">
+          <table>
+            <thead>
+              <tr><th>User</th><th>Contact</th><th>Role</th><th>Status</th><th>Permissions</th></tr>
+            </thead>
+            <tbody>
+              {% for user_obj in users %}
+                <tr>
+                  <td><strong>{{ user_obj.get_full_name|default:user_obj.username }}</strong><span>{{ user_obj.username }}</span></td>
+                  <td><strong>{{ user_obj.email|default:"No email" }}</strong><span>{{ user_obj.profile.phone_number|default:"No phone" }}</span></td>
+                  <td>{{ user_obj.profile.get_role_display }}</td>
+                  <td>{% if user_obj.is_active %}<span class="status on">Active</span>{% else %}<span class="status">Inactive</span>{% endif %}</td>
+                  <td>{% if user_obj.is_superuser %}Full access{% elif user_obj.profile.role == "admin" %}Custom admin{% else %}User dashboard{% endif %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
