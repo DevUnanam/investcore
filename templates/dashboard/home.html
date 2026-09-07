@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard | Nervex AI</title>
+  </head>
+  <body>
+    <h1>Nervex AI Dashboard</h1>
+    <p>Welcome, {{ request.user.get_full_name|default:request.user.username }}.</p>
+    <p>This placeholder confirms login redirects are wired. The full investment dashboard is the next stage.</p>
+    <form method="post" action="{% url 'accounts:logout' %}">
+      {% csrf_token %}
+      <button type="submit">Logout</button>
+    </form>
+  </body>
+</html>

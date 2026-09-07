@@ -1,0 +1,31 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login | Nervex AI</title>
+    <link rel="stylesheet" href="{% static 'website/css/landing.css' %}">
+    <link rel="stylesheet" href="{% static 'accounts/css/auth.css' %}">
+  </head>
+  <body>
+    <main class="auth-shell">
+      <section class="auth-card">
+        <a class="auth-brand" href="/">Nervex <span>AI</span></a>
+        <h1>Welcome back</h1>
+        <p>Login with your username and password to access your investment dashboard.</p>
+        <form method="post">
+          {% csrf_token %}
+          {% if form.non_field_errors %}
+            <div class="form-error">{{ form.non_field_errors }}</div>
+          {% endif %}
+          <label for="{{ form.username.id_for_label }}">Username</label>
+          {{ form.username }}
+          <label for="{{ form.password.id_for_label }}">Password</label>
+          {{ form.password }}
+          <button type="submit">Login</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

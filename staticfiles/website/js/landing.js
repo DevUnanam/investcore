@@ -62,14 +62,17 @@
             h("a", { href: "#insights" }, "Insights"),
             h("a", { href: "#security" }, "Security")
           ),
-          h("a", { className: "nav-cta", href: "#start" }, "Get Started")
+          h("div", { className: "nav-actions" },
+            h("a", { className: "login-link", href: "/accounts/login/" }, "Login"),
+            h("a", { className: "nav-cta", href: "#start" }, "Get Started")
+          )
         ),
         h("div", { className: "hero-grid" },
           h("div", { className: "hero-copy" },
             h("h1", null, "Invest smarter with confidence"),
             h("p", null, "AI-powered insights, guided investment bundles, and a secure wallet experience built to help everyday investors grow with clarity."),
             h("div", { className: "hero-actions" },
-              h("a", { className: "button primary", href: "#start" }, "Create Account"),
+              h("a", { className: "button primary", href: "/accounts/login/" }, "Login"),
               h("a", { className: "button secondary", href: "#bundles" }, "Explore Bundles")
             )
           ),

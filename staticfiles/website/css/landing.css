@@ -56,6 +56,14 @@ button, input { font: inherit; }
 .brand { font-size: clamp(28px, 4vw, 42px); font-weight: 800; }
 .brand span, .phone-top span { color: #2b88ff; }
 .nav-links { display: flex; gap: 28px; color: rgba(255,255,255,0.82); font-weight: 600; }
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+.login-link {
+  color: white;
+  font-weight: 800;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+}
 .nav-cta, .button, .start button {
   border-radius: 8px;
   padding: 15px 22px;
@@ -185,6 +193,7 @@ svg { width: 28px; height: 28px; color: var(--blue-600); }
 @media (max-width: 560px) {
   .hero { padding-inline: 18px; }
   .nav-cta { display: none; }
+  .login-link { min-height: 44px; }
   .hero h1 { font-size: 44px; }
   .hero-copy p { font-size: 16px; }
   .button { flex: 1; padding-inline: 14px; }
