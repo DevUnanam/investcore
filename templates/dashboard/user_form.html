@@ -1,0 +1,43 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} | Nervex AI</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="{% url 'dashboard:home' %}">Nervex <span>AI</span></a>
+        <nav>
+          <a href="{% url 'dashboard:home' %}">Overview</a>
+          <a class="active" href="{% url 'dashboard:users' %}">Users</a>
+          <a href="{% url 'accounts:profile' %}">Profile</a>
+        </nav>
+      </aside>
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <p>Frontend administration</p>
+            <h1>{{ title }}</h1>
+          </div>
+          <a class="ghost-button" href="{% url 'dashboard:users' %}">Back to Users</a>
+        </header>
+        <form class="profile-form admin-user-form" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% for field in form %}
+            <label class="{% if field.field.widget.input_type == 'checkbox' %}check-row{% endif %}">
+              <span>{{ field.label }}</span>
+              {{ field }}
+              {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+              {% if field.errors %}<em>{{ field.errors }}</em>{% endif %}
+            </label>
+          {% endfor %}
+          <button type="submit">{{ button_label }}</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

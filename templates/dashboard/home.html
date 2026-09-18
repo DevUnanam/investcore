@@ -36,7 +36,7 @@
             <strong>{{ summary.total_balance }}</strong>
           </div>
           <div class="quick-actions">
-            <button>Add Money</button>
+            <button type="button" data-open-invest>Invest Now</button>
             <button>Withdraw</button>
           </div>
         </section>
@@ -79,7 +79,70 @@
             </article>
           {% endfor %}
         </section>
+        <div class="modal-backdrop" data-invest-modal hidden>
+          <section class="invest-modal" role="dialog" aria-modal="true" aria-labelledby="invest-title">
+            <button class="modal-close" type="button" data-close-invest aria-label="Close investment packages">&times;</button>
+            <div class="modal-head">
+              <p>Choose a plan</p>
+              <h2 id="invest-title">Investment Packages</h2>
+            </div>
+            <div class="package-grid">
+              {% for package in investment_packages %}
+                <article class="package-card">
+                  <span>{{ package.name }}</span>
+                  <strong>{{ package.amount }}</strong>
+                  <p>{{ package.return }}</p>
+                  <small>{{ package.duration }}</small>
+                  <button type="button" data-package="{{ package.name }}">Select</button>
+                </article>
+              {% endfor %}
+            </div>
+            <div class="payment-panel" data-payment-panel hidden>
+              <h3 data-selected-package>Payment Options</h3>
+              <div class="payment-actions">
+                <button type="button" data-disabled-payment>Pay with Card</button>
+                <button type="button" data-disabled-payment>Pay with Bank Transfer</button>
+                <a href="https://t.me/adminstaff" target="_blank" rel="noopener">Speak to Admin Staff</a>
+              </div>
+              <p class="payment-error" data-payment-error hidden>This payment option is not available yet. Please speak with an admin staff.</p>
+            </div>
+          </section>
+        </div>
       </section>
     </main>
+    <script>
+      const investModal = document.querySelector("[data-invest-modal]");
+      const paymentPanel = document.querySelector("[data-payment-panel]");
+      const paymentError = document.querySelector("[data-payment-error]");
+      const selectedPackage = document.querySelector("[data-selected-package]");
+
+      document.querySelector("[data-open-invest]").addEventListener("click", () => {
+        investModal.hidden = false;
+        paymentPanel.hidden = true;
+        paymentError.hidden = true;
+      });
+
+      document.querySelector("[data-close-invest]").addEventListener("click", () => {
+        investModal.hidden = true;
+      });
+
+      investModal.addEventListener("click", (event) => {
+        if (event.target === investModal) investModal.hidden = true;
+      });
+
+      document.querySelectorAll("[data-package]").forEach((button) => {
+        button.addEventListener("click", () => {
+          selectedPackage.textContent = `${button.dataset.package} Payment Options`;
+          paymentPanel.hidden = false;
+          paymentError.hidden = true;
+        });
+      });
+
+      document.querySelectorAll("[data-disabled-payment]").forEach((button) => {
+        button.addEventListener("click", () => {
+          paymentError.hidden = false;
+        });
+      });
+    </script>
   </body>
 </html>

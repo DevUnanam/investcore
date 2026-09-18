@@ -39,9 +39,12 @@
         <section class="admin-panel">
           <div>
             <h2>Account Management</h2>
-            <p>Review users, inspect roles, and prepare account controls for the next permission stage.</p>
+            <p>Create users, assign roles, edit profile details, and update portfolio balances from the frontend.</p>
           </div>
-          <a href="{% url 'dashboard:users' %}">View Users</a>
+          <div class="admin-actions">
+            <a href="{% url 'dashboard:create_user' %}">Create User</a>
+            <a href="{% url 'dashboard:users' %}">View Users</a>
+          </div>
         </section>
         <section class="permission-strip">
           <h2>Your Permissions</h2>

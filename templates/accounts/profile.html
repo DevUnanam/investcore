@@ -43,6 +43,12 @@
           {% endfor %}
           <button type="submit">Save Profile</button>
         </form>
+        {% if request.user.profile.photo %}
+          <form class="inline-danger-form" method="post" action="{% url 'accounts:delete_profile_photo' %}">
+            {% csrf_token %}
+            <button type="submit">Delete Profile Image</button>
+          </form>
+        {% endif %}
       </section>
     </main>
   </body>

@@ -23,12 +23,18 @@
             <p>Frontend administration</p>
             <h1>Registered Users</h1>
           </div>
-          <a class="ghost-button" href="{% url 'dashboard:home' %}">Back</a>
+          <div class="topbar-actions">
+            <a class="ghost-button" href="{% url 'dashboard:create_user' %}">Create User</a>
+            <a class="ghost-button" href="{% url 'dashboard:home' %}">Back</a>
+          </div>
         </header>
+        {% if messages %}
+          {% for message in messages %}<div class="notice {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+        {% endif %}
         <section class="table-card">
           <table>
             <thead>
-              <tr><th>User</th><th>Contact</th><th>Role</th><th>Status</th><th>Permissions</th></tr>
+              <tr><th>User</th><th>Contact</th><th>Role</th><th>Balance</th><th>Status</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {% for user_obj in users %}
@@ -36,8 +42,12 @@
                   <td><strong>{{ user_obj.get_full_name|default:user_obj.username }}</strong><span>{{ user_obj.username }}</span></td>
                   <td><strong>{{ user_obj.email|default:"No email" }}</strong><span>{{ user_obj.profile.phone_number|default:"No phone" }}</span></td>
                   <td>{{ user_obj.profile.get_role_display }}</td>
+                  <td>${{ user_obj.profile.portfolio_balance }}</td>
                   <td>{% if user_obj.is_active %}<span class="status on">Active</span>{% else %}<span class="status">Inactive</span>{% endif %}</td>
-                  <td>{% if user_obj.is_superuser %}Full access{% elif user_obj.profile.role == "admin" %}Custom admin{% else %}User dashboard{% endif %}</td>
+                  <td class="table-actions">
+                    <a href="{% url 'dashboard:edit_user' user_obj.id %}">Edit</a>
+                    {% if user_obj != request.user %}<a class="danger" href="{% url 'dashboard:delete_user' user_obj.id %}">Delete</a>{% endif %}
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>

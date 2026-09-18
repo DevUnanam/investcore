@@ -12,6 +12,7 @@ class Profile(models.Model):
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.USER)
     phone_number = models.CharField(max_length=30, blank=True)
     photo = models.ImageField(upload_to="profile_photos/", blank=True, null=True)
+    portfolio_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     can_view_users = models.BooleanField(default=False)
     can_create_users = models.BooleanField(default=False)
     can_edit_users = models.BooleanField(default=False)

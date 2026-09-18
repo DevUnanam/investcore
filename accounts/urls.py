@@ -17,4 +17,5 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("profile/", views.profile, name="profile"),
+    path("profile/photo/delete/", views.delete_profile_photo, name="delete_profile_photo"),
 ]

@@ -1,7 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
+
+from accounts.forms import AdminUserCreateForm, AdminUserEditForm
 
 
 MARKET_ITEMS = [
@@ -14,6 +17,23 @@ MARKET_ITEMS = [
     {"symbol": "NVDA", "price": "121.36", "change": "+2.06%", "direction": "up"},
     {"symbol": "MSFT", "price": "419.09", "change": "+0.33%", "direction": "up"},
 ]
+
+
+INVESTMENT_PACKAGES = [
+    {"name": "Basic Package", "amount": "$500 - $4,999", "return": "Starter market exposure", "duration": "30 days"},
+    {"name": "Medium Package", "amount": "$5,000 - $14,999", "return": "Balanced growth planning", "duration": "60 days"},
+    {"name": "Premium Package", "amount": "$15,000+", "return": "Priority portfolio support", "duration": "90 days"},
+]
+
+
+def format_money(value):
+    return f"${value:,.2f}"
+
+
+def require_user_management(profile, permission):
+    if profile.user.is_superuser or getattr(profile, permission):
+        return
+    raise PermissionDenied
 
 
 @login_required
@@ -41,11 +61,12 @@ def home(request):
         {
             "market_items": MARKET_ITEMS,
             "summary": {
-                "total_balance": "$24,750.60",
+                "total_balance": format_money(profile.portfolio_balance),
                 "invested_amount": "$20,500.00",
                 "returns": "$4,250.60",
-                "available": "$4,250.60",
+                "available": format_money(profile.portfolio_balance),
             },
+            "investment_packages": INVESTMENT_PACKAGES,
             "bundles": [
                 {"name": "Starter Bundle", "amount": "$5,000.00", "value": "$6,250.00", "duration": "30 Days", "progress": 67},
                 {"name": "Growth Bundle", "amount": "$7,500.00", "value": "$11,175.00", "duration": "60 Days", "progress": 45},
@@ -63,9 +84,57 @@ def home(request):
 @login_required
 def users(request):
     profile = request.user.profile
-    if not profile.has_account_management_access:
-        raise PermissionDenied
+    require_user_management(profile, "can_view_users")
 
     User = get_user_model()
     users_qs = User.objects.select_related("profile").order_by("username")
     return render(request, "dashboard/users.html", {"users": users_qs})
+
+
+@login_required
+def create_user(request):
+    require_user_management(request.user.profile, "can_create_users")
+    if request.method == "POST":
+        form = AdminUserCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "User created successfully.")
+            return redirect("dashboard:users")
+    else:
+        form = AdminUserCreateForm()
+    return render(request, "dashboard/user_form.html", {"form": form, "title": "Create User", "button_label": "Create User"})
+
+
+@login_required
+def edit_user(request, user_id):
+    require_user_management(request.user.profile, "can_edit_users")
+    User = get_user_model()
+    user_obj = get_object_or_404(User.objects.select_related("profile"), pk=user_id)
+    if request.method == "POST":
+        form = AdminUserEditForm(request.POST, request.FILES, instance=user_obj.profile, user=user_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "User updated successfully.")
+            return redirect("dashboard:users")
+    else:
+        form = AdminUserEditForm(instance=user_obj.profile, user=user_obj)
+    return render(
+        request,
+        "dashboard/user_form.html",
+        {"form": form, "title": f"Edit {user_obj.username}", "button_label": "Save Changes", "user_obj": user_obj},
+    )
+
+
+@login_required
+def delete_user(request, user_id):
+    require_user_management(request.user.profile, "can_delete_users")
+    User = get_user_model()
+    user_obj = get_object_or_404(User, pk=user_id)
+    if user_obj == request.user:
+        messages.error(request, "You cannot delete your own account from here.")
+        return redirect("dashboard:users")
+    if request.method == "POST":
+        user_obj.delete()
+        messages.success(request, "User deleted successfully.")
+        return redirect("dashboard:users")
+    return render(request, "dashboard/user_confirm_delete.html", {"user_obj": user_obj})
